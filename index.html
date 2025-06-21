@@ -101,13 +101,13 @@
           ctx.beginPath();
           ctx.arc(centerX, centerY, radius, startAngle, endAngle, false);
 
-          ctx.strokeStyle = "#fff";
+          ctx.strokeStyle = "#cc00ff";
           ctx.lineWidth = viewstate / 25;
           ctx.lineCap = "round";
           ctx.stroke();
 
           const temperature = Math.floor(normalizedTemperature * 100);
-          ctx.fillStyle = "#fff";
+          ctx.fillStyle = "#cc00ff";
           ctx.font = `${viewstate / 4}px 'Gotham Black', sans-serif`;
           ctx.fontWeight = "lighter";
           ctx.textAlign = "center";

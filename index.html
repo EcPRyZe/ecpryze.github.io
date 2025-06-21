@@ -9,14 +9,22 @@
         overflow: hidden;
         height: 100vh;
         width: 100vw;
+        background-color: black;
       }
       iframe {
-        width: 100%;
-        height: 100%;
+        width: 240px;
+        height: 240px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(1.12); /* slight zoom to fill */
+        transform-origin: center center;
+        border: none;
+        z-index: 0;
       }
       canvas {
-        width: 65%;
-        height: 65%;
+        width: 240px;
+        height: 240px;
         position: absolute;
         top: 0;
         left: 0;
@@ -24,6 +32,7 @@
         bottom: 0;
         margin: auto;
         z-index: 1;
+        pointer-events: none;
       }
       a {
         color: #fff;
@@ -66,25 +75,18 @@
         }
 
         const iframe = document.createElement("iframe");
-        iframe.setAttribute("frameborder", "0");
-        iframe.setAttribute(
-          "src",
-          `https://www.shadertoy.com/embed/${shader}?gui=false&paused=false&muted=true`
-        );
+        iframe.src = `https://www.shadertoy.com/embed/${shader}?gui=false&paused=false&muted=true`;
         document.body.appendChild(iframe);
 
         const canvas = document.createElement("canvas");
-        canvas.setAttribute("id", "canvas");
-        canvas.setAttribute("width", 240);
-        canvas.setAttribute("height", 240);
+        canvas.id = "canvas";
+        canvas.width = 240;
+        canvas.height = 240;
         document.body.appendChild(canvas);
 
         function drawGauge(normalizedTemperature) {
           const canvas = document.getElementById("canvas");
           const ctx = canvas.getContext("2d");
-
-          canvas.width = 240;
-          canvas.height = 240;
 
           const viewstate = canvas.width;
           const centerX = canvas.width / 2;
@@ -107,7 +109,7 @@
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
 
-          // Bolder temperature value
+          // Bolder temperature text
           ctx.font = `bold ${viewstate / 3.5}px 'Gotham Black', sans-serif`;
           ctx.lineWidth = viewstate / 100;
           ctx.strokeStyle = "#000000";
@@ -115,7 +117,7 @@
           ctx.fillStyle = "#ffffff";
           ctx.fillText(`${temperature}`, centerX - viewstate / 16, centerY);
 
-          // Bolder degree symbol
+          // Degree symbol
           ctx.font = `bold ${viewstate / 9}px 'Gotham Black', sans-serif`;
           const offsetMap = [viewstate / 10, viewstate / 7.5, viewstate / 6];
           const offset = offsetMap[Math.min(2, Math.floor(temperature / 10))];

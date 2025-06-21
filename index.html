@@ -65,12 +65,6 @@
           return;
         }
 
-        const viewstateCookie = document.cookie
-          ?.split("; ")
-          .find((row) => row.startsWith("viewstate="))
-          ?.split("=")[1];
-        const viewstate = viewstateCookie ? parseInt(viewstateCookie) : 640;
-
         const iframe = document.createElement("iframe");
         iframe.setAttribute("frameborder", "0");
         iframe.setAttribute(
@@ -81,51 +75,49 @@
 
         const canvas = document.createElement("canvas");
         canvas.setAttribute("id", "canvas");
-        canvas.setAttribute("width", viewstate);
-        canvas.setAttribute("height", viewstate);
+        canvas.setAttribute("width", 240); // Fixed resolution
+        canvas.setAttribute("height", 240);
         document.body.appendChild(canvas);
 
-function drawGauge(normalizedTemperature) {
-  const canvas = document.getElementById("canvas");
-  const ctx = canvas.getContext("2d");
+        // === Refactored gauge code for Kraken 360 ===
+        function drawGauge(normalizedTemperature) {
+          const canvas = document.getElementById("canvas");
+          const ctx = canvas.getContext("2d");
 
-  // Set exact dimensions for NZXT Kraken
-  canvas.width = 240;
-  canvas.height = 240;
+          canvas.width = 240;
+          canvas.height = 240;
 
-  const viewstate = canvas.width;
-  const centerX = canvas.width / 2;
-  const centerY = canvas.height / 2;
-  const radius = viewstate * 0.35;
+          const viewstate = canvas.width;
+          const centerX = canvas.width / 2;
+          const centerY = canvas.height / 2;
+          const radius = viewstate * 0.35;
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  const startAngle = Math.PI / 2;
-  const endAngle = startAngle + normalizedTemperature * 2 * Math.PI;
+          const startAngle = Math.PI / 2;
+          const endAngle = startAngle + normalizedTemperature * 2 * Math.PI;
 
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, radius, startAngle, endAngle, false);
-  ctx.strokeStyle = "#ffffff";
-  ctx.lineWidth = viewstate / 20;
-  ctx.lineCap = "round";
-  ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, radius, startAngle, endAngle, false);
+          ctx.strokeStyle = "#ffffff";
+          ctx.lineWidth = viewstate / 20;
+          ctx.lineCap = "round";
+          ctx.stroke();
 
-  const temperature = Math.floor(normalizedTemperature * 100);
-  ctx.fillStyle = "#ffffff";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
+          const temperature = Math.floor(normalizedTemperature * 100);
+          ctx.fillStyle = "#ffffff";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
 
-  // Draw temperature value
-  ctx.font = `${viewstate / 4}px 'Gotham Black', sans-serif`;
-  ctx.fillText(`${temperature}`, centerX - viewstate / 16, centerY);
+          ctx.font = `${viewstate / 4}px 'Gotham Black', sans-serif`;
+          ctx.fillText(`${temperature}`, centerX - viewstate / 16, centerY);
 
-  // Draw degree symbol with offset based on temperature digits
-  ctx.font = `${viewstate / 10}px 'Gotham Black', sans-serif`;
-  const offsetMap = [viewstate / 10, viewstate / 7.5, viewstate / 6];
-  const offset = offsetMap[Math.min(2, Math.floor(temperature / 10))];
-  ctx.fillText("°", centerX + offset, centerY - viewstate / 20);
-}
-        
+          ctx.font = `${viewstate / 10}px 'Gotham Black', sans-serif`;
+          const offsetMap = [viewstate / 10, viewstate / 7.5, viewstate / 6];
+          const offset = offsetMap[Math.min(2, Math.floor(temperature / 10))];
+          ctx.fillText("°", centerX + offset, centerY - viewstate / 20);
+        }
+
         let animationId = null;
         let previousNormalized = 0;
 
@@ -160,11 +152,7 @@ function drawGauge(normalizedTemperature) {
               const processingUnit =
                 processor === "gpu" ? pc.gpus[0] : pc.cpus[0];
               const temperature = Math.floor(processingUnit.temperature);
-              const minTemperature = 0;
-              const maxTemperature = 100;
-              const normalized =
-                (temperature - minTemperature) /
-                (maxTemperature - minTemperature);
+              const normalized = (temperature - 0) / 100;
               animateGauge(normalized, previousNormalized);
               previousNormalized = normalized;
             },

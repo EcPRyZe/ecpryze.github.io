@@ -85,56 +85,46 @@
         canvas.setAttribute("height", viewstate);
         document.body.appendChild(canvas);
 
-        function drawGauge(normalizedTemperature) {
-          const canvas = document.getElementById("canvas");
-          const ctx = canvas.getContext("2d");
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
+function drawGauge(normalizedTemperature) {
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
 
-          const centerX = canvas.width / 2;
-          const centerY = canvas.height / 2;
-          const radius = canvas.width * 0.4;
-          const gaugeAngle = normalizedTemperature * 2 * Math.PI;
-          const startAngle = (2 * Math.PI) / 4;
-          const endAngle = gaugeAngle + startAngle;
+  // Set exact dimensions for NZXT Kraken
+  canvas.width = 240;
+  canvas.height = 240;
 
-          ctx.moveTo(centerX, centerY);
-          ctx.beginPath();
-          ctx.arc(centerX, centerY, radius, startAngle, endAngle, false);
+  const viewstate = canvas.width;
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+  const radius = viewstate * 0.35;
 
-          ctx.strokeStyle = "#ffff";
-          ctx.lineWidth = viewstate / 25;
-          ctx.lineCap = "round";
-          ctx.stroke();
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-          const temperature = Math.floor(normalizedTemperature * 100);
-          ctx.fillStyle = "#ffff";
-          ctx.font = `${viewstate / 4}px 'Gotham Black', sans-serif`;
-          ctx.fontWeight = "lighter";
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.fillText(`${temperature}`, centerX - viewstate / 25, centerY);
+  const startAngle = Math.PI / 2;
+  const endAngle = startAngle + normalizedTemperature * 2 * Math.PI;
 
-          ctx.font = `${viewstate / 8}px 'Gotham Black', sans-serif`;
-          if (temperature < 10) {
-            ctx.fillText(
-              "°",
-              centerX + viewstate / 12,
-              centerY - viewstate / 20
-            );
-          } else if (temperature < 100) {
-            ctx.fillText(
-              "°",
-              centerX + viewstate / 6,
-              centerY - viewstate / 20
-            );
-          } else {
-            ctx.fillText(
-              "°",
-              centerX + viewstate / 4,
-              centerY - viewstate / 20
-            );
-          }
-        }
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, radius, startAngle, endAngle, false);
+  ctx.strokeStyle = "#ffffff";
+  ctx.lineWidth = viewstate / 20;
+  ctx.lineCap = "round";
+  ctx.stroke();
+
+  const temperature = Math.floor(normalizedTemperature * 100);
+  ctx.fillStyle = "#ffffff";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  // Draw temperature value
+  ctx.font = `${viewstate / 4}px 'Gotham Black', sans-serif`;
+  ctx.fillText(`${temperature}`, centerX - viewstate / 16, centerY);
+
+  // Draw degree symbol with offset based on temperature digits
+  ctx.font = `${viewstate / 10}px 'Gotham Black', sans-serif`;
+  const offsetMap = [viewstate / 10, viewstate / 7.5, viewstate / 6];
+  const offset = offsetMap[Math.min(2, Math.floor(temperature / 10))];
+  ctx.fillText("°", centerX + offset, centerY - viewstate / 20);
+}
         
         let animationId = null;
         let previousNormalized = 0;

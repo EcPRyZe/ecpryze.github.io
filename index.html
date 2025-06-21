@@ -55,11 +55,11 @@
           const message = document.createElement("div");
           message.setAttribute("class", "message");
           message.innerHTML = `
-                    <h3>Display shaders from <a target="_blank" href="https://shadertoy.com/browse">shadertoy.com<a> on Kraken</h3>
-                    <br/>
-                    <p>Choose a shader and replace shader=id</p>
-                    <p>For temperature monitoring choose processor=gpu or cpu</p>
-                `;
+            <h3>Display shaders from <a target="_blank" href="https://shadertoy.com/browse">shadertoy.com</a> on Kraken</h3>
+            <br/>
+            <p>Choose a shader and replace shader=id</p>
+            <p>For temperature monitoring choose processor=gpu or cpu</p>
+          `;
           document.body.style.backgroundColor = "#404040";
           document.body.appendChild(message);
           return;
@@ -75,11 +75,10 @@
 
         const canvas = document.createElement("canvas");
         canvas.setAttribute("id", "canvas");
-        canvas.setAttribute("width", 240); // Fixed resolution
+        canvas.setAttribute("width", 240);
         canvas.setAttribute("height", 240);
         document.body.appendChild(canvas);
 
-        // === Refactored gauge code for Kraken 360 ===
         function drawGauge(normalizedTemperature) {
           const canvas = document.getElementById("canvas");
           const ctx = canvas.getContext("2d");
@@ -105,16 +104,22 @@
           ctx.stroke();
 
           const temperature = Math.floor(normalizedTemperature * 100);
-          ctx.fillStyle = "#ffffff";
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
 
-          ctx.font = `${viewstate / 4}px 'Gotham Black', sans-serif`;
+          // Bolder temperature value
+          ctx.font = `bold ${viewstate / 3.5}px 'Gotham Black', sans-serif`;
+          ctx.lineWidth = viewstate / 100;
+          ctx.strokeStyle = "#000000";
+          ctx.strokeText(`${temperature}`, centerX - viewstate / 16, centerY);
+          ctx.fillStyle = "#ffffff";
           ctx.fillText(`${temperature}`, centerX - viewstate / 16, centerY);
 
-          ctx.font = `${viewstate / 10}px 'Gotham Black', sans-serif`;
+          // Bolder degree symbol
+          ctx.font = `bold ${viewstate / 9}px 'Gotham Black', sans-serif`;
           const offsetMap = [viewstate / 10, viewstate / 7.5, viewstate / 6];
           const offset = offsetMap[Math.min(2, Math.floor(temperature / 10))];
+          ctx.strokeText("°", centerX + offset, centerY - viewstate / 20);
           ctx.fillText("°", centerX + offset, centerY - viewstate / 20);
         }
 
